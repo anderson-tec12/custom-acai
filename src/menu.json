@@ -1,6 +1,4 @@
 {
-  "freeToppingsPerBowl": 3,
-  "extraToppingPrice": 2,
   "sizes": [
     { "id": "300", "name": "300ml", "price": 11 }
   ],
@@ -8,6 +6,7 @@
     {
       "id": "frutas",
       "name": "Frutas",
+      "maxSelect": 2,
       "toppings": [
         { "id": "banana", "name": "Banana" },
         { "id": "morango", "name": "Morango" },
@@ -16,16 +15,26 @@
       ]
     },
     {
+      "id": "frutas-extras",
+      "name": "Frutas Extras",
+      "toppings": [
+        { "id": "extra-banana", "name": "Banana", "price": 1 },
+        { "id": "extra-morango", "name": "Morango", "price": 2 },
+        { "id": "extra-kiwi", "name": "Kiwi", "price": 3 },
+        { "id": "extra-uva", "name": "Uva", "price": 1.5 }
+      ]
+    },
+    {
       "id": "acompanhamentos",
       "name": "Acompanhamentos",
       "toppings": [
-        { "id": "sucrilhos", "name": "Sucrilhos" },
-        { "id": "pacoca", "name": "Paçoca" },
-        { "id": "confete", "name": "Confete" },
-        { "id": "bis", "name": "Bis" },
-        { "id": "kitkat", "name": "KitKat" },
-        { "id": "granola", "name": "Granola" },
-        { "id": "tortuguita", "name": "Tortuguita" }
+        { "id": "sucrilhos", "name": "Sucrilhos", "price": 1.5 },
+        { "id": "pacoca", "name": "Paçoca", "price": 2 },
+        { "id": "confete", "name": "Confete", "price": 2 },
+        { "id": "bis", "name": "Bis", "price": 2.5 },
+        { "id": "kitkat", "name": "KitKat", "price": 3 },
+        { "id": "granola", "name": "Granola", "price": 1.5 },
+        { "id": "tortuguita", "name": "Tortuguita", "price": 2.5 }
       ]
     }
   ],

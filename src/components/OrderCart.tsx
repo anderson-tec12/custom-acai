@@ -1,10 +1,35 @@
 
-import { brl, calcBowlLineTotal, getSize, getTopping } from "../lib/menu"
+import { brl, calcBowlLineTotal, describeBowlToppings, getSize } from "../lib/menu"
 import type { BowlLine } from "../types"
 
 type OrderCartProps = {
   bowls: BowlLine[]
   onRemoveBowl: (id: string) => void
+}
+
+function formatToppingsSummary(toppingIds: string[]): string {
+  const { fruits, extraFruits, accompaniments } = describeBowlToppings(toppingIds)
+  const parts: string[] = []
+
+  if (fruits.length > 0) {
+    parts.push(fruits.map((t) => t.name).join(", "))
+  }
+  if (extraFruits.length > 0) {
+    parts.push(
+      extraFruits
+        .map((t) => (t.price != null ? `${t.name} (+${brl.format(t.price)})` : t.name))
+        .join(", ")
+    )
+  }
+  if (accompaniments.length > 0) {
+    parts.push(
+      accompaniments
+        .map((t) => (t.price != null ? `${t.name} (+${brl.format(t.price)})` : t.name))
+        .join(", ")
+    )
+  }
+
+  return parts.join(" · ") || "Sem complementos"
 }
 
 export function OrderCart({ bowls, onRemoveBowl }: OrderCartProps) {
@@ -24,7 +49,7 @@ export function OrderCart({ bowls, onRemoveBowl }: OrderCartProps) {
         {bowls.map((bowl) => {
           const size = getSize(bowl.sizeId)
           const lineTotal = calcBowlLineTotal(bowl.sizeId, bowl.toppingIds, bowl.quantity)
-          const toppings = bowl.toppingIds.map((id) => getTopping(id)?.name ?? id).join(", ")
+          const toppings = formatToppingsSummary(bowl.toppingIds)
 
           return (
             <li
@@ -36,9 +61,7 @@ export function OrderCart({ bowls, onRemoveBowl }: OrderCartProps) {
                   <p className="font-semibold text-zinc-800">
                     {bowl.quantity}x Açaí {size?.name ?? bowl.sizeId}
                   </p>
-                  <p className="mt-1 text-sm text-zinc-500">
-                    {toppings || "Sem complementos"}
-                  </p>
+                  <p className="mt-1 text-sm text-zinc-500">{toppings}</p>
                   {bowl.notes.trim() && (
                     <p className="mt-1 text-xs italic text-zinc-400">Obs.: {bowl.notes.trim()}</p>
                   )}

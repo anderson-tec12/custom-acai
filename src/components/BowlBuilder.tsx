@@ -1,6 +1,15 @@
 import { useMemo, useState } from "react"
 import menu from "../menu.json"
-import { brl, calcBowlLineTotal, calcBowlUnitPrice, getSize } from "../lib/menu"
+import {
+  brl,
+  calcAccompanimentsPrice,
+  calcBowlLineTotal,
+  calcBowlUnitPrice,
+  calcExtraFruitsPrice,
+  countToppingsInCategory,
+  getSize,
+  getTopping,
+} from "../lib/menu"
 import type { SizeId } from "../types"
 
 type BowlBuilderProps = {
@@ -29,10 +38,28 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
     [sizeId, toppingIds, quantity]
   )
 
-  const extraCount = Math.max(0, toppingIds.length - menu.freeToppingsPerBowl)
+  const extraFruitsPrice = useMemo(() => calcExtraFruitsPrice(toppingIds), [toppingIds])
+  const accompanimentsPrice = useMemo(() => calcAccompanimentsPrice(toppingIds), [toppingIds])
 
   function toggleTopping(id: string) {
-    setToppingIds((prev) => (prev.includes(id) ? prev.filter((t) => t !== id) : [...prev, id]))
+    const topping = getTopping(id)
+    if (!topping) return
+
+    setToppingIds((prev) => {
+      if (prev.includes(id)) {
+        return prev.filter((t) => t !== id)
+      }
+
+      if (topping.categoryId === "frutas") {
+        const category = menu.toppingCategories.find((c) => c.id === "frutas")
+        const maxSelect = category && "maxSelect" in category ? category.maxSelect : undefined
+        if (maxSelect != null && countToppingsInCategory(prev, "frutas") >= maxSelect) {
+          return prev
+        }
+      }
+
+      return [...prev, id]
+    })
   }
 
   function handleAdd() {
@@ -47,9 +74,7 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-acai-900">Monte seu açaí</h2>
-          <p className="text-sm text-zinc-500">
-            {menu.freeToppingsPerBowl} complementos inclusos · extras {brl.format(menu.extraToppingPrice)} cada
-          </p>
+          <p className="text-sm text-zinc-500">Até 2 frutas inclusas no copo</p>
         </div>
         <span className="rounded-full bg-acai-100 px-3 py-1 text-sm font-semibold text-acai-800">
           {brl.format(lineTotal)}
@@ -78,30 +103,65 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
           </div>
         </div>
 
-        {menu.toppingCategories.map((category) => (
-          <div key={category.id}>
-            <p className="label">{category.name}</p>
-            <div className="flex flex-wrap gap-2">
-              {category.toppings.map((topping) => {
-                const selected = toppingIds.includes(topping.id)
-                return (
-                  <button
-                    key={topping.id}
-                    type="button"
-                    onClick={() => toggleTopping(topping.id)}
-                    className={`chip ${selected ? "chip-selected" : "hover:border-acai-400"}`}
-                  >
-                    {topping.name}
-                  </button>
-                )
-              })}
-            </div>
-          </div>
-        ))}
+        {menu.toppingCategories.map((category) => {
+          const fruitCount = category.id === "frutas" ? countToppingsInCategory(toppingIds, "frutas") : 0
+          const maxSelect = "maxSelect" in category ? category.maxSelect : undefined
 
-        {extraCount > 0 && (
+          return (
+            <div key={category.id}>
+              <p className="label">
+                {category.name}
+                {maxSelect != null && (
+                  <span className="ml-1 font-normal text-zinc-400">
+                    ({fruitCount}/{maxSelect})
+                  </span>
+                )}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                {category.toppings.map((topping) => {
+                  const selected = toppingIds.includes(topping.id)
+                  const atMax =
+                    category.id === "frutas" &&
+                    maxSelect != null &&
+                    !selected &&
+                    fruitCount >= maxSelect
+                  const label =
+                    "price" in topping && topping.price != null
+                      ? `${topping.name} +${brl.format(topping.price)}`
+                      : topping.name
+
+                  return (
+                    <button
+                      key={topping.id}
+                      type="button"
+                      disabled={atMax}
+                      onClick={() => toggleTopping(topping.id)}
+                      className={`chip ${
+                        selected
+                          ? "chip-selected"
+                          : atMax
+                            ? "cursor-not-allowed opacity-40"
+                            : "hover:border-acai-400"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  )
+                })}
+              </div>
+            </div>
+          )
+        })}
+
+        {extraFruitsPrice > 0 && (
           <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
-            {extraCount} complemento{extraCount > 1 ? "s" : ""} extra{extraCount > 1 ? "s" : ""} (+{brl.format(extraCount * menu.extraToppingPrice)} por unidade)
+            Frutas extras: +{brl.format(extraFruitsPrice)}
+          </p>
+        )}
+
+        {accompanimentsPrice > 0 && (
+          <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            Complementos: +{brl.format(accompanimentsPrice)}
           </p>
         )}
 

@@ -1,42 +1,57 @@
-import { menuConfig } from "./menu"
 import {
   brl,
+  calcAccompanimentsPrice,
   calcBowlLineTotal,
-  calcBowlUnitPrice,
+  calcExtraFruitsPrice,
+  describeBowlToppings,
   getPayment,
   getSize,
-  getTopping,
 } from "./menu"
 import type { OrderState } from "../types"
 
 export function buildWhatsappMessage(order: OrderState, storeName: string): string {
   const lines: string[] = [`*NOVO PEDIDO — ${storeName}*`, "", "*Itens do pedido:*"]
 
-  let itemIndex = 0
   for (const bowl of order.bowls) {
     const size = getSize(bowl.sizeId)
     const sizeName = size?.name ?? bowl.sizeId
-    const unitExtras = calcBowlUnitPrice(bowl.toppingIds)
+    const extraFruitsPrice = calcExtraFruitsPrice(bowl.toppingIds)
+    const accompanimentsPrice = calcAccompanimentsPrice(bowl.toppingIds)
     const lineTotal = calcBowlLineTotal(bowl.sizeId, bowl.toppingIds, bowl.quantity)
-    itemIndex += 1
+    const { fruits, extraFruits, accompaniments } = describeBowlToppings(bowl.toppingIds)
 
     lines.push("")
-    lines.push(`${itemIndex}. *${bowl.quantity}x Açaí ${sizeName}* — ${brl.format(lineTotal)}`)
+    lines.push(`*${bowl.quantity}x Açaí ${sizeName}* — ${brl.format(lineTotal)}`)
 
-    if (bowl.toppingIds.length > 0) {
-      const freeLimit = menuConfig.freeToppingsPerBowl
-      const toppingLines = bowl.toppingIds.map((id, idx) => {
-        const name = getTopping(id)?.name ?? id
-        const isExtra = idx >= freeLimit
-        return isExtra ? `   + ${name} (extra)` : `   • ${name}`
-      })
-      lines.push(...toppingLines)
-    } else {
+    if (fruits.length > 0) {
+      for (const fruit of fruits) {
+        lines.push(`   • ${fruit.name}`)
+      }
+    }
+
+    if (extraFruits.length > 0) {
+      for (const fruit of extraFruits) {
+        const price = fruit.price != null ? ` (+${brl.format(fruit.price)})` : ""
+        lines.push(`   + ${fruit.name}${price}`)
+      }
+    }
+
+    if (accompaniments.length > 0) {
+      for (const topping of accompaniments) {
+        const price = topping.price != null ? ` (+${brl.format(topping.price)})` : ""
+        lines.push(`   • ${topping.name}${price}`)
+      }
+    }
+
+    if (fruits.length === 0 && extraFruits.length === 0 && accompaniments.length === 0) {
       lines.push("   • Sem complementos")
     }
 
-    if (unitExtras > 0) {
-      lines.push(`   _Complementos extras: ${brl.format(unitExtras)} por unidade_`)
+    if (extraFruitsPrice > 0) {
+      lines.push(`   _Frutas extras: ${brl.format(extraFruitsPrice)}_`)
+    }
+    if (accompanimentsPrice > 0) {
+      lines.push(`   _Complementos: ${brl.format(accompanimentsPrice)}_`)
     }
 
     if (bowl.notes.trim()) {
