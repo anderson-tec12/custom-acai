@@ -22,7 +22,7 @@ type BowlBuilderProps = {
 }
 
 export function BowlBuilder({ onAdd }: BowlBuilderProps) {
-  const [sizeId, setSizeId] = useState<SizeId>(menu.sizes[1]?.id ?? menu.sizes[0].id)
+  const [sizeId, setSizeId] = useState<SizeId>("300")
   const [toppingIds, setToppingIds] = useState<string[]>([])
   const [notes, setNotes] = useState("")
   const [quantity, setQuantity] = useState(1)
@@ -101,6 +101,9 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
               </button>
             ))}
           </div>
+          <p className="mt-2 text-sm text-zinc-500">
+            Todos os tamanhos acompanham leite em pó e leite condensado.
+          </p>
         </div>
 
         {menu.toppingCategories.map((category) => {

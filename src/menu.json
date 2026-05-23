@@ -1,6 +1,7 @@
 {
   "sizes": [
-    { "id": "300", "name": "300ml", "price": 11 }
+    { "id": "300", "name": "300ml", "price": 11 },
+    { "id": "500", "name": "500ml", "price": 16 }
   ],
   "toppingCategories": [
     {
@@ -28,13 +29,14 @@
       "id": "acompanhamentos",
       "name": "Acompanhamentos",
       "toppings": [
-        { "id": "sucrilhos", "name": "Sucrilhos", "price": 1.5 },
+        { "id": "sucrilhos", "name": "Sucrilhos", "price": 2 },
+        { "id": "canudo-de-chocolate", "name": "Canudo de Chocolate", "price": 2 },
         { "id": "pacoca", "name": "Paçoca", "price": 2 },
         { "id": "confete", "name": "Confete", "price": 2 },
-        { "id": "bis", "name": "Bis", "price": 2.5 },
-        { "id": "kitkat", "name": "KitKat", "price": 3 },
-        { "id": "granola", "name": "Granola", "price": 1.5 },
-        { "id": "tortuguita", "name": "Tortuguita", "price": 2.5 }
+        { "id": "bis", "name": "Bis", "price": 3 },
+        { "id": "kitkat", "name": "KitKat", "price": 4 },
+        { "id": "granola", "name": "Granola", "price": 2 },
+        { "id": "tortuguita", "name": "Tortuguita", "price": 3 }
       ]
     }
   ],
