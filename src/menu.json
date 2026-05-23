@@ -1,0 +1,56 @@
+{
+  "freeToppingsPerBowl": 3,
+  "extraToppingPrice": 2,
+  "sizes": [
+    { "id": "300", "name": "300ml", "price": 11 }
+  ],
+  "toppingCategories": [
+    {
+      "id": "frutas",
+      "name": "Frutas",
+      "toppings": [
+        { "id": "banana", "name": "Banana" },
+        { "id": "morango", "name": "Morango" },
+        { "id": "kiwi", "name": "Kiwi" },
+        { "id": "uva", "name": "Uva" }
+      ]
+    },
+    {
+      "id": "acompanhamentos",
+      "name": "Acompanhamentos",
+      "toppings": [
+        { "id": "sucrilhos", "name": "Sucrilhos" },
+        { "id": "pacoca", "name": "Paçoca" },
+        { "id": "confete", "name": "Confete" },
+        { "id": "bis", "name": "Bis" },
+        { "id": "kitkat", "name": "KitKat" },
+        { "id": "granola", "name": "Granola" },
+        { "id": "tortuguita", "name": "Tortuguita" }
+      ]
+    },
+    {
+      "id": "extras-bowl",
+      "name": "Extras no copo",
+      "toppings": [
+        { "id": "leite-ninho", "name": "Leite Ninho" },
+        { "id": "creme-ninho", "name": "Creme de Ninho" },
+        { "id": "gotas-chocolate", "name": "Gotas de chocolate" }
+      ]
+    }
+  ],
+  "standaloneProducts": [
+    { "id": "agua", "name": "Água 500ml", "price": 3 },
+    { "id": "suco", "name": "Suco natural 300ml", "price": 8 },
+    { "id": "barra-cereal", "name": "Barra de cereal", "price": 5 }
+  ],
+  "paymentMethods": [
+    { "id": "pix", "name": "PIX" },
+    { "id": "dinheiro", "name": "Dinheiro" },
+    { "id": "credito", "name": "Cartão de crédito" },
+    { "id": "debito", "name": "Cartão de débito" }
+  ],
+  "deliveryTypes": [
+    { "id": "retirada", "name": "Retirada na loja" },
+    { "id": "entrega", "name": "Entrega" }
+  ]
+}
