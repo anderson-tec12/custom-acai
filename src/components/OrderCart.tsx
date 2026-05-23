@@ -1,15 +1,14 @@
 
-import { brl, calcBowlLineTotal, calcProductLineTotal, getProduct, getSize, getTopping } from "../lib/menu"
-import type { BowlLine, ProductLine } from "../types"
+import { brl, calcBowlLineTotal, getSize, getTopping } from "../lib/menu"
+import type { BowlLine } from "../types"
 
 type OrderCartProps = {
   bowls: BowlLine[]
-  products: ProductLine[]
   onRemoveBowl: (id: string) => void
 }
 
-export function OrderCart({ bowls, products, onRemoveBowl }: OrderCartProps) {
-  if (bowls.length === 0 && products.length === 0) {
+export function OrderCart({ bowls, onRemoveBowl }: OrderCartProps) {
+  if (bowls.length === 0) {
     return (
       <section className="card border-dashed">
         <h2 className="text-lg font-bold text-acai-900">Seu pedido</h2>
@@ -55,22 +54,6 @@ export function OrderCart({ bowls, products, onRemoveBowl }: OrderCartProps) {
                   </button>
                 </div>
               </div>
-            </li>
-          )
-        })}
-
-        {products.map((line) => {
-          const product = getProduct(line.productId)
-          const lineTotal = calcProductLineTotal(line.productId, line.quantity)
-          return (
-            <li
-              key={line.id}
-              className="flex items-center justify-between rounded-xl border border-acai-100 bg-white px-3 py-3"
-            >
-              <p className="font-semibold text-zinc-800">
-                {line.quantity}x {product?.name ?? line.productId}
-              </p>
-              <p className="font-semibold text-acai-800">{brl.format(lineTotal)}</p>
             </li>
           )
         })}

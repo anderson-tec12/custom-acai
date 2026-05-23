@@ -27,30 +27,12 @@
         { "id": "granola", "name": "Granola" },
         { "id": "tortuguita", "name": "Tortuguita" }
       ]
-    },
-    {
-      "id": "extras-bowl",
-      "name": "Extras no copo",
-      "toppings": [
-        { "id": "leite-ninho", "name": "Leite Ninho" },
-        { "id": "creme-ninho", "name": "Creme de Ninho" },
-        { "id": "gotas-chocolate", "name": "Gotas de chocolate" }
-      ]
     }
-  ],
-  "standaloneProducts": [
-    { "id": "agua", "name": "Água 500ml", "price": 3 },
-    { "id": "suco", "name": "Suco natural 300ml", "price": 8 },
-    { "id": "barra-cereal", "name": "Barra de cereal", "price": 5 }
   ],
   "paymentMethods": [
     { "id": "pix", "name": "PIX" },
     { "id": "dinheiro", "name": "Dinheiro" },
     { "id": "credito", "name": "Cartão de crédito" },
     { "id": "debito", "name": "Cartão de débito" }
-  ],
-  "deliveryTypes": [
-    { "id": "retirada", "name": "Retirada na loja" },
-    { "id": "entrega", "name": "Entrega" }
   ]
 }

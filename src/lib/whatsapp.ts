@@ -3,33 +3,14 @@ import {
   brl,
   calcBowlLineTotal,
   calcBowlUnitPrice,
-  calcProductLineTotal,
-  getDelivery,
   getPayment,
-  getProduct,
   getSize,
   getTopping,
 } from "./menu"
 import type { OrderState } from "../types"
 
 export function buildWhatsappMessage(order: OrderState, storeName: string): string {
-  const lines: string[] = [
-    `🥤 *NOVO PEDIDO — ${storeName}*`,
-    "",
-    `👤 *Cliente:* ${order.customer.name}`,
-    `📱 *Telefone:* ${order.customer.phone}`,
-    `📦 *Tipo:* ${getDelivery(order.customer.deliveryType)?.name ?? order.customer.deliveryType}`,
-  ]
-
-  if (order.customer.deliveryType === "entrega" && order.customer.address.trim()) {
-    lines.push(`📍 *Endereço:* ${order.customer.address.trim()}`)
-  }
-
-  if (order.customer.notes.trim()) {
-    lines.push(`📝 *Obs. cliente:* ${order.customer.notes.trim()}`)
-  }
-
-  lines.push("", "*Itens do pedido:*")
+  const lines: string[] = [`*NOVO PEDIDO — ${storeName}*`, "", "*Itens do pedido:*"]
 
   let itemIndex = 0
   for (const bowl of order.bowls) {
@@ -63,36 +44,22 @@ export function buildWhatsappMessage(order: OrderState, storeName: string): stri
     }
   }
 
-  for (const line of order.products) {
-    const product = getProduct(line.productId)
-    const name = product?.name ?? line.productId
-    const lineTotal = calcProductLineTotal(line.productId, line.quantity)
-    itemIndex += 1
-    lines.push("")
-    lines.push(`${itemIndex}. *${line.quantity}x ${name}* — ${brl.format(lineTotal)}`)
-  }
-
   const payment = getPayment(order.paymentId)
   const total = calcOrderTotal(order)
 
   lines.push("")
   lines.push("─────────────────")
-  lines.push(`💳 *Pagamento:* ${payment?.name ?? "Não informado"}`)
-  lines.push(`💰 *TOTAL: ${brl.format(total)}*`)
+  lines.push(`*Pagamento:* ${payment?.name ?? "Não informado"}`)
+  lines.push(`*TOTAL: ${brl.format(total)}*`)
 
   return lines.join("\n")
 }
 
 export function calcOrderTotal(order: OrderState): number {
-  const bowlsTotal = order.bowls.reduce(
+  return order.bowls.reduce(
     (sum, b) => sum + calcBowlLineTotal(b.sizeId, b.toppingIds, b.quantity),
     0
   )
-  const productsTotal = order.products.reduce(
-    (sum, p) => sum + calcProductLineTotal(p.productId, p.quantity),
-    0
-  )
-  return bowlsTotal + productsTotal
 }
 
 export function openWhatsappOrder(message: string, phoneE164: string) {
