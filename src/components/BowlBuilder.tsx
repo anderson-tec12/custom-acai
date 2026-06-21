@@ -184,7 +184,7 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
             <span className="text-sm font-medium text-zinc-700">Deseja talher?</span>
           </label>
           <p className="mt-1 text-sm text-zinc-500">
-            O talher custa {brl.format(CUTLERY_PRICE)} por unidade.
+            Adicional de {brl.format(CUTLERY_PRICE)}.
           </p>
         </div>
 
