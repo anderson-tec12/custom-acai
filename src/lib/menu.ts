@@ -33,6 +33,8 @@ const toppingById = new Map<string, ToppingEntry>(
 
 export const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" })
 
+export const CUTLERY_PRICE = 0.5
+
 export function getSize(id: string) {
   return sizeById.get(id)
 }
@@ -76,11 +78,17 @@ export function calcBowlUnitPrice(toppingIds: string[]): number {
   return calcExtraFruitsPrice(toppingIds) + calcAccompanimentsPrice(toppingIds)
 }
 
-export function calcBowlLineTotal(sizeId: string, toppingIds: string[], quantity: number): number {
+export function calcBowlLineTotal(
+  sizeId: string,
+  toppingIds: string[],
+  quantity: number,
+  wantsCutlery = false
+): number {
   const size = getSize(sizeId)
   if (!size) return 0
   const unit = size.price + calcBowlUnitPrice(toppingIds)
-  return unit * quantity
+  const cutlery = wantsCutlery ? CUTLERY_PRICE * quantity : 0
+  return unit * quantity + cutlery
 }
 
 export function describeBowlToppings(toppingIds: string[]): {

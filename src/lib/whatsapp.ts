@@ -3,6 +3,7 @@ import {
   calcAccompanimentsPrice,
   calcBowlLineTotal,
   calcExtraFruitsPrice,
+  CUTLERY_PRICE,
   describeBowlToppings,
   getPayment,
   getSize,
@@ -17,7 +18,12 @@ export function buildWhatsappMessage(order: OrderState, storeName: string): stri
     const sizeName = size?.name ?? bowl.sizeId
     const extraFruitsPrice = calcExtraFruitsPrice(bowl.toppingIds)
     const accompanimentsPrice = calcAccompanimentsPrice(bowl.toppingIds)
-    const lineTotal = calcBowlLineTotal(bowl.sizeId, bowl.toppingIds, bowl.quantity)
+    const lineTotal = calcBowlLineTotal(
+      bowl.sizeId,
+      bowl.toppingIds,
+      bowl.quantity,
+      bowl.wantsCutlery
+    )
     const { fruits, extraFruits, accompaniments } = describeBowlToppings(bowl.toppingIds)
 
     lines.push("")
@@ -54,6 +60,11 @@ export function buildWhatsappMessage(order: OrderState, storeName: string): stri
       lines.push(`   _Complementos: ${brl.format(accompanimentsPrice)}_`)
     }
 
+    if (bowl.wantsCutlery) {
+      const cutleryTotal = CUTLERY_PRICE * bowl.quantity
+      lines.push(`   • Talher (+${brl.format(cutleryTotal)})`)
+    }
+
     if (bowl.notes.trim()) {
       lines.push(`   _Obs.: ${bowl.notes.trim()}_`)
     }
@@ -72,7 +83,7 @@ export function buildWhatsappMessage(order: OrderState, storeName: string): stri
 
 export function calcOrderTotal(order: OrderState): number {
   return order.bowls.reduce(
-    (sum, b) => sum + calcBowlLineTotal(b.sizeId, b.toppingIds, b.quantity),
+    (sum, b) => sum + calcBowlLineTotal(b.sizeId, b.toppingIds, b.quantity, b.wantsCutlery),
     0
   )
 }

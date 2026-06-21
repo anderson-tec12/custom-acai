@@ -7,6 +7,7 @@ import {
   calcBowlUnitPrice,
   calcExtraFruitsPrice,
   countToppingsInCategory,
+  CUTLERY_PRICE,
   getSize,
   getTopping,
 } from "../lib/menu"
@@ -18,6 +19,7 @@ type BowlBuilderProps = {
     toppingIds: string[]
     notes: string
     quantity: number
+    wantsCutlery: boolean
   }) => void
 }
 
@@ -26,16 +28,18 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
   const [toppingIds, setToppingIds] = useState<string[]>([])
   const [notes, setNotes] = useState("")
   const [quantity, setQuantity] = useState(1)
+  const [wantsCutlery, setWantsCutlery] = useState(false)
 
   const unitPrice = useMemo(() => {
     const size = getSize(sizeId)
     if (!size) return 0
-    return size.price + calcBowlUnitPrice(toppingIds)
-  }, [sizeId, toppingIds])
+    const base = size.price + calcBowlUnitPrice(toppingIds)
+    return wantsCutlery ? base + CUTLERY_PRICE : base
+  }, [sizeId, toppingIds, wantsCutlery])
 
   const lineTotal = useMemo(
-    () => calcBowlLineTotal(sizeId, toppingIds, quantity),
-    [sizeId, toppingIds, quantity]
+    () => calcBowlLineTotal(sizeId, toppingIds, quantity, wantsCutlery),
+    [sizeId, toppingIds, quantity, wantsCutlery]
   )
 
   const extraFruitsPrice = useMemo(() => calcExtraFruitsPrice(toppingIds), [toppingIds])
@@ -63,10 +67,11 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
   }
 
   function handleAdd() {
-    onAdd({ sizeId, toppingIds, notes, quantity })
+    onAdd({ sizeId, toppingIds, notes, quantity, wantsCutlery })
     setToppingIds([])
     setNotes("")
     setQuantity(1)
+    setWantsCutlery(false)
   }
 
   return (
@@ -169,13 +174,34 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
         )}
 
         <div>
+          <label className="flex cursor-pointer items-start gap-2">
+            <input
+              type="checkbox"
+              className="mt-0.5 h-4 w-4 rounded border-acai-300 accent-acai-600"
+              checked={wantsCutlery}
+              onChange={(e) => setWantsCutlery(e.target.checked)}
+            />
+            <span className="text-sm font-medium text-zinc-700">Deseja talher?</span>
+          </label>
+          <p className="mt-1 text-sm text-zinc-500">
+            O talher custa {brl.format(CUTLERY_PRICE)} por unidade.
+          </p>
+        </div>
+
+        {wantsCutlery && (
+          <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            Talher: +{brl.format(CUTLERY_PRICE * quantity)}
+          </p>
+        )}
+
+        <div>
           <label className="label" htmlFor="bowl-notes">
             Observações deste copo
           </label>
           <textarea
             id="bowl-notes"
             className="input min-h-20 resize-y"
-            placeholder="Ex.: sem açúcar, pouco gelo..."
+            placeholder=""
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
           />

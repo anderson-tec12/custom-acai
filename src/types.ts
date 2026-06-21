@@ -11,6 +11,7 @@ export type BowlLine = {
   toppingIds: string[]
   notes: string
   quantity: number
+  wantsCutlery: boolean
 }
 
 export type OrderState = {

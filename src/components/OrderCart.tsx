@@ -1,5 +1,5 @@
 
-import { brl, calcBowlLineTotal, describeBowlToppings, getSize } from "../lib/menu"
+import { brl, calcBowlLineTotal, CUTLERY_PRICE, describeBowlToppings, getSize } from "../lib/menu"
 import type { BowlLine } from "../types"
 
 type OrderCartProps = {
@@ -48,8 +48,14 @@ export function OrderCart({ bowls, onRemoveBowl }: OrderCartProps) {
       <ul className="space-y-3">
         {bowls.map((bowl) => {
           const size = getSize(bowl.sizeId)
-          const lineTotal = calcBowlLineTotal(bowl.sizeId, bowl.toppingIds, bowl.quantity)
+          const lineTotal = calcBowlLineTotal(
+            bowl.sizeId,
+            bowl.toppingIds,
+            bowl.quantity,
+            bowl.wantsCutlery
+          )
           const toppings = formatToppingsSummary(bowl.toppingIds)
+          const cutleryTotal = bowl.wantsCutlery ? CUTLERY_PRICE * bowl.quantity : 0
 
           return (
             <li
@@ -62,6 +68,11 @@ export function OrderCart({ bowls, onRemoveBowl }: OrderCartProps) {
                     {bowl.quantity}x Açaí {size?.name ?? bowl.sizeId}
                   </p>
                   <p className="mt-1 text-sm text-zinc-500">{toppings}</p>
+                  {bowl.wantsCutlery && (
+                    <p className="mt-1 text-sm text-zinc-500">
+                      Com talher (+{brl.format(cutleryTotal)})
+                    </p>
+                  )}
                   {bowl.notes.trim() && (
                     <p className="mt-1 text-xs italic text-zinc-400">Obs.: {bowl.notes.trim()}</p>
                   )}
