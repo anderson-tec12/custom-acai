@@ -3,7 +3,6 @@ import { useState } from "react"
 import { BowlBuilder } from "./components/BowlBuilder"
 import { ConfirmBar } from "./components/ConfirmBar"
 import { Header } from "./components/Header"
-import { InstallBanner } from "./components/InstallBanner"
 import { OrderCart } from "./components/OrderCart"
 import { PaymentSelector } from "./components/PaymentSelector"
 import { useOrder } from "./hooks/useOrder"
@@ -38,7 +37,6 @@ export function App() {
 
   return (
     <div className="flex min-h-screen flex-col">
-      <InstallBanner />
       <Header storeName={storeName} />
 
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-6 sm:px-6">
