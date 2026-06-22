@@ -133,9 +133,7 @@ Copie [`.env.example`](.env.example) para `.env`:
 | Variável | Descrição | Uso atual |
 |----------|-----------|-----------|
 | `VITE_STORE_NAME` | Nome exibido no header e na mensagem WhatsApp | Ativo (opcional; padrão: `Custom Açaí`) |
-| `VITE_WHATSAPP_PHONE_E164` | Telefone em E.164 (ex.: `5511939107270`) | **Obrigatória** para confirmar pedido |
-
-Sem `VITE_WHATSAPP_PHONE_E164` no `.env`, o botão de confirmar exibe erro de configuração em vez de abrir o WhatsApp.
+| `VITE_WHATSAPP_PHONE_E164` | Telefone em E.164 (ex.: `551190001111`) | Ativo (opcional; padrão: `5511911110000`) |
 
 ### Cardápio
 

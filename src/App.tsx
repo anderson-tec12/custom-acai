@@ -9,7 +9,8 @@ import { useOrder } from "./hooks/useOrder"
 import { buildWhatsappMessage, openWhatsappOrder } from "./lib/whatsapp"
 
 const storeName = import.meta.env.VITE_STORE_NAME || "Custom Açaí"
-const whatsappPhone = import.meta.env.VITE_WHATSAPP_PHONE_E164?.trim()
+const whatsappPhone =
+  import.meta.env.VITE_WHATSAPP_PHONE_E164?.trim() || "5511939107270"
 
 export function App() {
   const { order, total, itemCount, addBowl, removeBowl, setPaymentId } = useOrder()
@@ -28,10 +29,6 @@ export function App() {
     const validationError = validate()
     if (validationError) {
       setError(validationError)
-      return
-    }
-    if (!whatsappPhone) {
-      setError("Configure VITE_WHATSAPP_PHONE_E164 no arquivo .env (copie de .env.example).")
       return
     }
     setError(undefined)
