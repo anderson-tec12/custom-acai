@@ -132,10 +132,10 @@ Copie [`.env.example`](.env.example) para `.env`:
 
 | Variável | Descrição | Uso atual |
 |----------|-----------|-----------|
-| `VITE_STORE_NAME` | Nome exibido no header e na mensagem WhatsApp | Ativo |
-| `VITE_WHATSAPP_PHONE_E164` | Telefone em E.164 (ex.: `5511999999999`) | Documentada, mas **não usada** |
+| `VITE_STORE_NAME` | Nome exibido no header e na mensagem WhatsApp | Ativo (opcional; padrão: `Custom Açaí`) |
+| `VITE_WHATSAPP_PHONE_E164` | Telefone em E.164 (ex.: `5511939107270`) | **Obrigatória** para confirmar pedido |
 
-O telefone WhatsApp está definido em [`src/App.tsx`](src/App.tsx) (`5511939107270`). Para alterar o número, edite a constante `whatsappPhone` nesse arquivo.
+Sem `VITE_WHATSAPP_PHONE_E164` no `.env`, o botão de confirmar exibe erro de configuração em vez de abrir o WhatsApp.
 
 ### Cardápio
 
