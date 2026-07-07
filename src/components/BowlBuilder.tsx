@@ -8,8 +8,10 @@ import {
   calcExtraFruitsPrice,
   countToppingsInCategory,
   CUTLERY_PRICE,
+  filterAllowedToppings,
   getSize,
   getTopping,
+  isCategoryDisabledForSize,
 } from "../lib/menu"
 import type { SizeId } from "../types"
 
@@ -44,10 +46,18 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
 
   const extraFruitsPrice = useMemo(() => calcExtraFruitsPrice(toppingIds), [toppingIds])
   const accompanimentsPrice = useMemo(() => calcAccompanimentsPrice(toppingIds), [toppingIds])
+  const isCasquinha = sizeId === "casquinha"
+
+  function handleSizeChange(nextSizeId: SizeId) {
+    setSizeId(nextSizeId)
+    setToppingIds((prev) => filterAllowedToppings(nextSizeId, prev))
+  }
 
   function toggleTopping(id: string) {
     const topping = getTopping(id)
     if (!topping) return
+
+    if (isCategoryDisabledForSize(sizeId, topping.categoryId)) return
 
     setToppingIds((prev) => {
       if (prev.includes(id)) {
@@ -79,7 +89,9 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-acai-900">Monte seu açaí</h2>
-          <p className="text-sm text-zinc-500">Até 2 frutas inclusas no copo</p>
+          {!isCasquinha && (
+            <p className="text-sm text-zinc-500">Até 2 frutas inclusas no copo</p>
+          )}
         </div>
         <span className="rounded-full bg-acai-100 px-3 py-1 text-sm font-semibold text-acai-800">
           {brl.format(lineTotal)}
@@ -94,7 +106,7 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
               <button
                 key={size.id}
                 type="button"
-                onClick={() => setSizeId(size.id)}
+                onClick={() => handleSizeChange(size.id)}
                 className={`rounded-xl border p-3 text-center transition ${
                   sizeId === size.id
                     ? "border-acai-600 bg-acai-600 text-white shadow-md"
@@ -107,11 +119,21 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
             ))}
           </div>
           <p className="mt-2 text-sm text-zinc-500">
-            Todos os tamanhos acompanham leite em pó e leite condensado.
+            {isCasquinha
+              ? "Acompanha leite em pó e leite condensado."
+              : "Todos os tamanhos acompanham leite em pó e leite condensado."}
           </p>
         </div>
 
-        {menu.toppingCategories.map((category) => {
+        {isCasquinha && (
+          <p className="rounded-xl bg-acai-50 px-3 py-2 text-sm text-acai-800">
+            Açaí na casquinha acompanha leite em pó e leite condensado. Adicionais opcionais abaixo.
+          </p>
+        )}
+
+        {menu.toppingCategories
+          .filter((category) => !isCategoryDisabledForSize(sizeId, category.id))
+          .map((category) => {
           const fruitCount = category.id === "frutas" ? countToppingsInCategory(toppingIds, "frutas") : 0
           const maxSelect = "maxSelect" in category ? category.maxSelect : undefined
 

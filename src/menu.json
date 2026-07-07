@@ -1,7 +1,13 @@
 {
   "sizes": [
     { "id": "300", "name": "300ml", "price": 11 },
-    { "id": "500", "name": "500ml", "price": 16 }
+    { "id": "500", "name": "500ml", "price": 16 },
+    {
+      "id": "casquinha",
+      "name": "Na casquinha",
+      "price": 8,
+      "disabledCategories": ["frutas", "frutas-extras"]
+    }
   ],
   "toppingCategories": [
     {

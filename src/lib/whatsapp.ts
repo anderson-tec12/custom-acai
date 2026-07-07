@@ -3,6 +3,7 @@ import {
   calcAccompanimentsPrice,
   calcBowlLineTotal,
   calcExtraFruitsPrice,
+  CASQUINHA_DEFAULT_TOPPINGS,
   CUTLERY_PRICE,
   describeBowlToppings,
   getPayment,
@@ -50,7 +51,11 @@ export function buildWhatsappMessage(order: OrderState, storeName: string): stri
     }
 
     if (fruits.length === 0 && extraFruits.length === 0 && accompaniments.length === 0) {
-      lines.push("   • Sem complementos")
+      if (bowl.sizeId === "casquinha") {
+        lines.push(`   • ${CASQUINHA_DEFAULT_TOPPINGS}`)
+      } else {
+        lines.push("   • Sem complementos")
+      }
     }
 
     if (extraFruitsPrice > 0) {

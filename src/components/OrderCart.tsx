@@ -1,5 +1,5 @@
 
-import { brl, calcBowlLineTotal, CUTLERY_PRICE, describeBowlToppings, getSize } from "../lib/menu"
+import { brl, calcBowlLineTotal, CASQUINHA_DEFAULT_TOPPINGS, CUTLERY_PRICE, describeBowlToppings, getSize } from "../lib/menu"
 import type { BowlLine } from "../types"
 
 type OrderCartProps = {
@@ -7,7 +7,7 @@ type OrderCartProps = {
   onRemoveBowl: (id: string) => void
 }
 
-function formatToppingsSummary(toppingIds: string[]): string {
+function formatToppingsSummary(sizeId: string, toppingIds: string[]): string {
   const { fruits, extraFruits, accompaniments } = describeBowlToppings(toppingIds)
   const parts: string[] = []
 
@@ -29,7 +29,9 @@ function formatToppingsSummary(toppingIds: string[]): string {
     )
   }
 
-  return parts.join(" · ") || "Sem complementos"
+  if (parts.length > 0) return parts.join(" · ")
+  if (sizeId === "casquinha") return CASQUINHA_DEFAULT_TOPPINGS
+  return "Sem complementos"
 }
 
 export function OrderCart({ bowls, onRemoveBowl }: OrderCartProps) {
@@ -54,7 +56,7 @@ export function OrderCart({ bowls, onRemoveBowl }: OrderCartProps) {
             bowl.quantity,
             bowl.wantsCutlery
           )
-          const toppings = formatToppingsSummary(bowl.toppingIds)
+          const toppings = formatToppingsSummary(bowl.sizeId, bowl.toppingIds)
           const cutleryTotal = bowl.wantsCutlery ? CUTLERY_PRICE * bowl.quantity : 0
 
           return (

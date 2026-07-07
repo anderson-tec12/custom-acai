@@ -35,8 +35,29 @@ export const brl = new Intl.NumberFormat("pt-BR", { style: "currency", currency:
 
 export const CUTLERY_PRICE = 0.5
 
+export const CASQUINHA_DEFAULT_TOPPINGS = "Leite em pó e leite condensado"
+
 export function getSize(id: string) {
   return sizeById.get(id)
+}
+
+export function getDisabledCategories(sizeId: string): string[] {
+  const size = getSize(sizeId)
+  if (!size || !("disabledCategories" in size)) return []
+  const disabled = size.disabledCategories
+  return Array.isArray(disabled) ? disabled : []
+}
+
+export function isCategoryDisabledForSize(sizeId: string, categoryId: string): boolean {
+  return getDisabledCategories(sizeId).includes(categoryId)
+}
+
+export function filterAllowedToppings(sizeId: string, toppingIds: string[]): string[] {
+  const disabled = new Set(getDisabledCategories(sizeId))
+  return toppingIds.filter((id) => {
+    const topping = getTopping(id)
+    return topping && !disabled.has(topping.categoryId)
+  })
 }
 
 export function getTopping(id: string) {

@@ -18,13 +18,13 @@
 ## Funcionalidades
 
 ### Montador de copos
-- **Tamanhos:** 300ml (R$ 11,00) e 500ml (R$ 16,00)
-- **Frutas inclusas:** até 2 opções sem custo (Banana, Morango, Kiwi, Uva)
-- **Frutas extras** e **acompanhamentos** com preço adicional
+- **Tamanhos:** 300ml (R$ 11,00), 500ml (R$ 16,00) e **Na casquinha** (R$ 8,00)
+- **Frutas inclusas:** até 2 opções sem custo (Banana, Morango, Kiwi, Uva) — não disponível na casquinha
+- **Frutas extras** e **acompanhamentos** com preço adicional (na casquinha, apenas acompanhamentos)
 - **Talher opcional:** +R$ 0,50 por unidade
 - **Observações** por copo e **quantidade** configurável
 
-Todos os tamanhos incluem leite em pó e leite condensado.
+Copos (300ml/500ml) incluem leite em pó e leite condensado. A casquinha também acompanha leite em pó e leite condensado, sem opção de frutas.
 
 ### Carrinho e pagamento
 - Resumo detalhado por item com remoção individual
@@ -53,7 +53,7 @@ Layout responsivo com montador de copos à esquerda e carrinho à direita.
 
 ### Montador de açaí
 
-Seleção de tamanho (300ml / 500ml), frutas inclusas (até 2), frutas extras e acompanhamentos com preço adicional.
+Seleção de tamanho (300ml / 500ml / Na casquinha), frutas inclusas (até 2), frutas extras e acompanhamentos com preço adicional.
 
 ![Montador de açaí](docs/releases/v1.0/screenshots/02-bowl-builder.png)
 
@@ -139,7 +139,7 @@ Copie [`.env.example`](.env.example) para `.env`:
 
 Edite [`src/menu.json`](src/menu.json) sem alterar código:
 
-- `sizes` — tamanhos e preços base
+- `sizes` — tamanhos e preços base (opcional: `disabledCategories` para restringir complementos, ex.: casquinha)
 - `toppingCategories` — frutas (com `maxSelect: 2`), frutas extras, acompanhamentos
 - `paymentMethods` — formas de pagamento
 
@@ -151,8 +151,9 @@ Fórmula implementada em [`src/lib/menu.ts`](src/lib/menu.ts):
 total_linha = (preço_tamanho + extras) × quantidade + (talher ? 0.50 × quantidade : 0)
 ```
 
-- **Frutas base:** inclusas no preço do tamanho (máx. 2)
-- **Frutas extras e acompanhamentos:** somados ao preço unitário
+- **Frutas base:** inclusas no preço do tamanho (máx. 2; indisponível na casquinha)
+- **Frutas extras e acompanhamentos:** somados ao preço unitário (na casquinha, só acompanhamentos)
+- **Casquinha:** R$ 8,00 fixo + acompanhamentos opcionais
 - **Talher (`CUTLERY_PRICE`):** R$ 0,50 × quantidade, independente dos extras
 
 ---
