@@ -101,7 +101,7 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
       <div className="space-y-5">
         <div>
           <p className="label">Tamanho</p>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             {menu.sizes.map((size) => (
               <button
                 key={size.id}

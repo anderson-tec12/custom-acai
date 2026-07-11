@@ -1,5 +1,6 @@
 {
   "sizes": [
+    { "id": "200", "name": "200ml", "price": 9 },
     { "id": "300", "name": "300ml", "price": 11 },
     { "id": "500", "name": "500ml", "price": 16 },
     {
