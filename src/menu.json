@@ -43,6 +43,7 @@
         { "id": "bis", "name": "Bis", "price": 3 },
         { "id": "kitkat", "name": "KitKat", "price": 4 },
         { "id": "granola", "name": "Granola", "price": 2 },
+        { "id": "creme-de-ninho", "name": "Creme de Ninho", "price": 4 },
         { "id": "tortuguita", "name": "Tortuguita", "price": 3 }
       ]
     }
