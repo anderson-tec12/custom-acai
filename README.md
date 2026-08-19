@@ -139,8 +139,8 @@ Copie [`.env.example`](.env.example) para `.env`:
 
 Edite [`src/menu.json`](src/menu.json) sem alterar código:
 
-- `sizes` — tamanhos e preços base (opcional: `disabledCategories` para restringir complementos, ex.: casquinha)
-- `toppingCategories` — frutas (com `maxSelect: 2`), frutas extras, acompanhamentos
+- `sizes` — tamanhos e preços base (opcional: `disabledCategories` para restringir complementos, ex.: casquinha; `categoryMaxSelect` para limitar inclusos por tamanho, ex.: 200ml com 1 fruta)
+- `toppingCategories` — frutas (com `maxSelect: 2` por padrão), frutas extras, acompanhamentos
 - `paymentMethods` — formas de pagamento
 
 ### Precificação
@@ -151,7 +151,7 @@ Fórmula implementada em [`src/lib/menu.ts`](src/lib/menu.ts):
 total_linha = (preço_tamanho + extras) × quantidade + (talher ? 0.50 × quantidade : 0)
 ```
 
-- **Frutas base:** inclusas no preço do tamanho (máx. 2; indisponível na casquinha)
+- **Frutas base:** inclusas no preço do tamanho (máx. 1 no 200ml, máx. 2 nos demais copos; indisponível na casquinha)
 - **Frutas extras e acompanhamentos:** somados ao preço unitário (na casquinha, só acompanhamentos)
 - **Casquinha:** R$ 8,00 fixo + acompanhamentos opcionais
 - **Talher (`CUTLERY_PRICE`):** R$ 0,50 × quantidade, independente dos extras

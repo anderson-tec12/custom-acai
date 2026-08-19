@@ -9,6 +9,7 @@ import {
   countToppingsInCategory,
   CUTLERY_PRICE,
   filterAllowedToppings,
+  getCategoryMaxSelect,
   getSize,
   getTopping,
   isCategoryDisabledForSize,
@@ -65,8 +66,7 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
       }
 
       if (topping.categoryId === "frutas") {
-        const category = menu.toppingCategories.find((c) => c.id === "frutas")
-        const maxSelect = category && "maxSelect" in category ? category.maxSelect : undefined
+        const maxSelect = getCategoryMaxSelect(sizeId, "frutas")
         if (maxSelect != null && countToppingsInCategory(prev, "frutas") >= maxSelect) {
           return prev
         }
@@ -90,7 +90,11 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
         <div>
           <h2 className="text-lg font-bold text-acai-900">Monte seu açaí</h2>
           {!isCasquinha && (
-            <p className="text-sm text-zinc-500">Até 2 frutas inclusas no copo</p>
+            <p className="text-sm text-zinc-500">
+              {getCategoryMaxSelect(sizeId, "frutas") === 1
+                ? "Até 1 fruta inclusa no copo"
+                : "Até 2 frutas inclusas no copo"}
+            </p>
           )}
         </div>
         <span className="rounded-full bg-acai-100 px-3 py-1 text-sm font-semibold text-acai-800">
@@ -135,7 +139,7 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
           .filter((category) => !isCategoryDisabledForSize(sizeId, category.id))
           .map((category) => {
           const fruitCount = category.id === "frutas" ? countToppingsInCategory(toppingIds, "frutas") : 0
-          const maxSelect = "maxSelect" in category ? category.maxSelect : undefined
+          const maxSelect = getCategoryMaxSelect(sizeId, category.id)
 
           return (
             <div key={category.id}>

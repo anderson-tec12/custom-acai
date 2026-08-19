@@ -52,11 +52,42 @@ export function isCategoryDisabledForSize(sizeId: string, categoryId: string): b
   return getDisabledCategories(sizeId).includes(categoryId)
 }
 
+export function getCategoryMaxSelect(sizeId: string, categoryId: string): number | undefined {
+  const size = getSize(sizeId)
+  if (size && "categoryMaxSelect" in size) {
+    const overrides = size.categoryMaxSelect
+    if (overrides && typeof overrides === "object" && categoryId in overrides) {
+      const value = overrides[categoryId as keyof typeof overrides]
+      if (typeof value === "number") return value
+    }
+  }
+
+  const category = categoryById.get(categoryId)
+  if (category && "maxSelect" in category) {
+    const value = category.maxSelect
+    return typeof value === "number" ? value : undefined
+  }
+
+  return undefined
+}
+
 export function filterAllowedToppings(sizeId: string, toppingIds: string[]): string[] {
   const disabled = new Set(getDisabledCategories(sizeId))
-  return toppingIds.filter((id) => {
+  const allowed = toppingIds.filter((id) => {
     const topping = getTopping(id)
     return topping && !disabled.has(topping.categoryId)
+  })
+
+  const counts = new Map<string, number>()
+  return allowed.filter((id) => {
+    const topping = getTopping(id)
+    if (!topping) return false
+    const maxSelect = getCategoryMaxSelect(sizeId, topping.categoryId)
+    if (maxSelect == null) return true
+    const count = counts.get(topping.categoryId) ?? 0
+    if (count >= maxSelect) return false
+    counts.set(topping.categoryId, count + 1)
+    return true
   })
 }
 
