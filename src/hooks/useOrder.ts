@@ -13,8 +13,20 @@ function newId() {
 export function useOrder() {
   const [bowls, setBowls] = useState<BowlLine[]>([])
   const [paymentId, setPaymentId] = useState<PaymentId | "">("")
+  const [scheduled, setScheduledState] = useState(false)
+  const [scheduledTime, setScheduledTime] = useState("")
 
-  const order: OrderState = useMemo(() => ({ bowls, paymentId }), [bowls, paymentId])
+  const order: OrderState = useMemo(
+    () => ({ bowls, paymentId, scheduled, scheduledTime }),
+    [bowls, paymentId, scheduled, scheduledTime]
+  )
+
+  const setScheduled = useCallback((checked: boolean) => {
+    setScheduledState(checked)
+    if (!checked) {
+      setScheduledTime("")
+    }
+  }, [])
 
   const total = useMemo(() => calcOrderTotal(order), [order])
 
@@ -35,5 +47,7 @@ export function useOrder() {
     addBowl,
     removeBowl,
     setPaymentId,
+    setScheduled,
+    setScheduledTime,
   }
 }

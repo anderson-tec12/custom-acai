@@ -5,6 +5,7 @@ import { ConfirmBar } from "./components/ConfirmBar"
 import { Header } from "./components/Header"
 import { OrderCart } from "./components/OrderCart"
 import { PaymentSelector } from "./components/PaymentSelector"
+import { ScheduleSelector } from "./components/ScheduleSelector"
 import { useOrder } from "./hooks/useOrder"
 import { buildWhatsappMessage, openWhatsappOrder } from "./lib/whatsapp"
 
@@ -13,7 +14,16 @@ const whatsappPhone =
   import.meta.env.VITE_WHATSAPP_PHONE_E164?.trim() || "5511939107270"
 
 export function App() {
-  const { order, total, itemCount, addBowl, removeBowl, setPaymentId } = useOrder()
+  const {
+    order,
+    total,
+    itemCount,
+    addBowl,
+    removeBowl,
+    setPaymentId,
+    setScheduled,
+    setScheduledTime,
+  } = useOrder()
 
   const [error, setError] = useState<string | undefined>()
 
@@ -22,6 +32,9 @@ export function App() {
       return "Adicione pelo menos um item ao pedido."
     }
     if (!order.paymentId) return "Selecione a forma de pagamento."
+    if (order.scheduled && !order.scheduledTime) {
+      return "Selecione o horário do agendamento."
+    }
     return undefined
   }
 
@@ -45,6 +58,12 @@ export function App() {
           <div className="space-y-6">
             <BowlBuilder onAdd={addBowl} />
             <PaymentSelector value={order.paymentId} onChange={setPaymentId} />
+            <ScheduleSelector
+              scheduled={order.scheduled}
+              scheduledTime={order.scheduledTime}
+              onScheduledChange={setScheduled}
+              onScheduledTimeChange={setScheduledTime}
+            />
           </div>
 
           <aside className="space-y-6 lg:sticky lg:top-24">

@@ -17,4 +17,6 @@ export type BowlLine = {
 export type OrderState = {
   bowls: BowlLine[]
   paymentId: PaymentId | ""
+  scheduled: boolean
+  scheduledTime: string
 }

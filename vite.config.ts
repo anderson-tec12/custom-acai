@@ -1,11 +1,27 @@
-import { defineConfig } from "vite"
+import process from "node:process"
+import { defineConfig, type Plugin, type PluginOption } from "vite"
 import react from "@vitejs/plugin-react"
 import { VitePWA } from "vite-plugin-pwa"
 
-export default defineConfig({
-  plugins: [
-    react(),
-    VitePWA({
+const nodeMajor = Number(process.versions.node.split(".")[0])
+const enablePwa = nodeMajor >= 20
+
+function stubPwaRegister(): Plugin {
+  return {
+    name: "stub-pwa-register",
+    resolveId(id) {
+      if (id === "virtual:pwa-register") return "\0virtual:pwa-register"
+    },
+    load(id) {
+      if (id === "\0virtual:pwa-register") {
+        return "export function registerSW() { return () => {} }"
+      }
+    },
+  }
+}
+
+const pwaPlugin: PluginOption = enablePwa
+  ? VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["icons/*.png"],
       manifest: {
@@ -41,9 +57,12 @@ export default defineConfig({
           },
         ],
       },
-      devOptions: { enabled: true },
-    }),
-  ],
+      devOptions: { enabled: false },
+    })
+  : stubPwaRegister()
+
+export default defineConfig({
+  plugins: [react(), pwaPlugin],
   server: {
     port: 5173,
     host: true,

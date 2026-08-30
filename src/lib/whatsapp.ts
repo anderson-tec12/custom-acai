@@ -105,6 +105,9 @@ export function buildWhatsappMessage(order: OrderState, storeName: string): stri
   lines.push("")
   lines.push("─────────────────")
   lines.push(`*Pagamento:* ${payment?.name ?? "Não informado"}`)
+  if (order.scheduled && order.scheduledTime) {
+    lines.push(`*Agendado para:* ${order.scheduledTime}`)
+  }
   lines.push(`*TOTAL: ${brl.format(total)}*`)
 
   return lines.join("\n")
