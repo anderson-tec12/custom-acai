@@ -2,12 +2,14 @@ import {
   brl,
   calcAccompanimentsPrice,
   calcBowlLineTotal,
+  calcExtraAccompanimentsPrice,
   calcExtraFruitsPrice,
   CASQUINHA_DEFAULT_TOPPINGS,
   CUTLERY_PRICE,
   describeBowlToppings,
   getPayment,
   getSize,
+  isCategoryIncludedInSize,
 } from "./menu"
 import type { OrderState } from "../types"
 
@@ -18,14 +20,17 @@ export function buildWhatsappMessage(order: OrderState, storeName: string): stri
     const size = getSize(bowl.sizeId)
     const sizeName = size?.name ?? bowl.sizeId
     const extraFruitsPrice = calcExtraFruitsPrice(bowl.toppingIds)
-    const accompanimentsPrice = calcAccompanimentsPrice(bowl.toppingIds)
+    const accompanimentsPrice = calcAccompanimentsPrice(bowl.sizeId, bowl.toppingIds)
+    const extraAccompanimentsPrice = calcExtraAccompanimentsPrice(bowl.toppingIds)
     const lineTotal = calcBowlLineTotal(
       bowl.sizeId,
       bowl.toppingIds,
       bowl.quantity,
       bowl.wantsCutlery
     )
-    const { fruits, extraFruits, accompaniments } = describeBowlToppings(bowl.toppingIds)
+    const { fruits, extraFruits, accompaniments, extraAccompaniments } = describeBowlToppings(
+      bowl.toppingIds
+    )
 
     lines.push("")
     lines.push(`*${bowl.quantity}x Açaí ${sizeName}* — ${brl.format(lineTotal)}`)
@@ -44,13 +49,29 @@ export function buildWhatsappMessage(order: OrderState, storeName: string): stri
     }
 
     if (accompaniments.length > 0) {
+      const accompanimentsIncluded = isCategoryIncludedInSize(bowl.sizeId, "acompanhamentos")
       for (const topping of accompaniments) {
-        const price = topping.price != null ? ` (+${brl.format(topping.price)})` : ""
+        const price =
+          !accompanimentsIncluded && topping.price != null
+            ? ` (+${brl.format(topping.price)})`
+            : ""
         lines.push(`   • ${topping.name}${price}`)
       }
     }
 
-    if (fruits.length === 0 && extraFruits.length === 0 && accompaniments.length === 0) {
+    if (extraAccompaniments.length > 0) {
+      for (const topping of extraAccompaniments) {
+        const price = topping.price != null ? ` (+${brl.format(topping.price)})` : ""
+        lines.push(`   + ${topping.name}${price}`)
+      }
+    }
+
+    if (
+      fruits.length === 0 &&
+      extraFruits.length === 0 &&
+      accompaniments.length === 0 &&
+      extraAccompaniments.length === 0
+    ) {
       if (bowl.sizeId === "casquinha") {
         lines.push(`   • ${CASQUINHA_DEFAULT_TOPPINGS}`)
       } else {
@@ -63,6 +84,9 @@ export function buildWhatsappMessage(order: OrderState, storeName: string): stri
     }
     if (accompanimentsPrice > 0) {
       lines.push(`   _Complementos: ${brl.format(accompanimentsPrice)}_`)
+    }
+    if (extraAccompanimentsPrice > 0) {
+      lines.push(`   _Acompanhamentos extras: ${brl.format(extraAccompanimentsPrice)}_`)
     }
 
     if (bowl.wantsCutlery) {

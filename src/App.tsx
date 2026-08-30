@@ -19,7 +19,7 @@ export function App() {
 
   function validate(): string | undefined {
     if (order.bowls.length === 0) {
-      return "Adicione pelo menos um copo ao pedido."
+      return "Adicione pelo menos um item ao pedido."
     }
     if (!order.paymentId) return "Selecione a forma de pagamento."
     return undefined

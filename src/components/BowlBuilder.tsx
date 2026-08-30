@@ -5,14 +5,18 @@ import {
   calcAccompanimentsPrice,
   calcBowlLineTotal,
   calcBowlUnitPrice,
+  calcExtraAccompanimentsPrice,
   calcExtraFruitsPrice,
   countToppingsInCategory,
   CUTLERY_PRICE,
   filterAllowedToppings,
   getCategoryMaxSelect,
-  getSize,
+  getSizeKind,
+  getSizesByKind,
   getTopping,
   isCategoryDisabledForSize,
+  isCategoryIncludedInSize,
+  type SizeKind,
 } from "../lib/menu"
 import type { SizeId } from "../types"
 
@@ -26,17 +30,30 @@ type BowlBuilderProps = {
   }) => void
 }
 
+function getSubtitle(sizeId: SizeId): string | null {
+  if (sizeId === "casquinha") return null
+  if (getSizeKind(sizeId) === "marmita") {
+    return "Até 2 frutas e 2 acompanhamentos inclusos. Extras a parte."
+  }
+  const maxFruits = getCategoryMaxSelect(sizeId, "frutas")
+  if (maxFruits === 1) return "Até 1 fruta inclusa no copo"
+  return "Até 2 frutas inclusas no copo"
+}
+
 export function BowlBuilder({ onAdd }: BowlBuilderProps) {
+  const [sizeKind, setSizeKind] = useState<SizeKind>("copo")
   const [sizeId, setSizeId] = useState<SizeId>("300")
   const [toppingIds, setToppingIds] = useState<string[]>([])
   const [notes, setNotes] = useState("")
   const [quantity, setQuantity] = useState(1)
   const [wantsCutlery, setWantsCutlery] = useState(false)
 
+  const sizesForKind = useMemo(() => getSizesByKind(sizeKind), [sizeKind])
+
   const unitPrice = useMemo(() => {
-    const size = getSize(sizeId)
+    const size = menu.sizes.find((s) => s.id === sizeId)
     if (!size) return 0
-    const base = size.price + calcBowlUnitPrice(toppingIds)
+    const base = size.price + calcBowlUnitPrice(sizeId, toppingIds)
     return wantsCutlery ? base + CUTLERY_PRICE : base
   }, [sizeId, toppingIds, wantsCutlery])
 
@@ -46,8 +63,27 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
   )
 
   const extraFruitsPrice = useMemo(() => calcExtraFruitsPrice(toppingIds), [toppingIds])
-  const accompanimentsPrice = useMemo(() => calcAccompanimentsPrice(toppingIds), [toppingIds])
+  const extraAccompanimentsPrice = useMemo(
+    () => calcExtraAccompanimentsPrice(toppingIds),
+    [toppingIds]
+  )
+  const accompanimentsPrice = useMemo(
+    () => calcAccompanimentsPrice(sizeId, toppingIds),
+    [sizeId, toppingIds]
+  )
   const isCasquinha = sizeId === "casquinha"
+  const subtitle = getSubtitle(sizeId)
+
+  function handleKindChange(nextKind: SizeKind) {
+    setSizeKind(nextKind)
+    const nextSizes = getSizesByKind(nextKind)
+    const currentInList = nextSizes.some((s) => s.id === sizeId)
+    if (!currentInList && nextSizes.length > 0) {
+      const nextSizeId = nextSizes[0].id as SizeId
+      setSizeId(nextSizeId)
+      setToppingIds((prev) => filterAllowedToppings(nextSizeId, prev))
+    }
+  }
 
   function handleSizeChange(nextSizeId: SizeId) {
     setSizeId(nextSizeId)
@@ -65,11 +101,12 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
         return prev.filter((t) => t !== id)
       }
 
-      if (topping.categoryId === "frutas") {
-        const maxSelect = getCategoryMaxSelect(sizeId, "frutas")
-        if (maxSelect != null && countToppingsInCategory(prev, "frutas") >= maxSelect) {
-          return prev
-        }
+      const maxSelect = getCategoryMaxSelect(sizeId, topping.categoryId)
+      if (
+        maxSelect != null &&
+        countToppingsInCategory(prev, topping.categoryId) >= maxSelect
+      ) {
+        return prev
       }
 
       return [...prev, id]
@@ -89,13 +126,7 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
       <div className="mb-4 flex items-start justify-between gap-3">
         <div>
           <h2 className="text-lg font-bold text-acai-900">Monte seu açaí</h2>
-          {!isCasquinha && (
-            <p className="text-sm text-zinc-500">
-              {getCategoryMaxSelect(sizeId, "frutas") === 1
-                ? "Até 1 fruta inclusa no copo"
-                : "Até 2 frutas inclusas no copo"}
-            </p>
-          )}
+          {subtitle && <p className="text-sm text-zinc-500">{subtitle}</p>}
         </div>
         <span className="rounded-full bg-acai-100 px-3 py-1 text-sm font-semibold text-acai-800">
           {brl.format(lineTotal)}
@@ -104,13 +135,31 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
 
       <div className="space-y-5">
         <div>
+          <p className="label">Tipo</p>
+          <div className="mb-3 grid grid-cols-2 gap-2">
+            {(["copo", "marmita"] as const).map((kind) => (
+              <button
+                key={kind}
+                type="button"
+                onClick={() => handleKindChange(kind)}
+                className={`rounded-xl border p-3 text-center font-semibold transition ${
+                  sizeKind === kind
+                    ? "border-acai-600 bg-acai-600 text-white shadow-md"
+                    : "border-acai-200 bg-white hover:border-acai-400"
+                }`}
+              >
+                {kind === "copo" ? "Copos" : "Marmitas"}
+              </button>
+            ))}
+          </div>
+
           <p className="label">Tamanho</p>
           <div className="grid grid-cols-2 gap-2">
-            {menu.sizes.map((size) => (
+            {sizesForKind.map((size) => (
               <button
                 key={size.id}
                 type="button"
-                onClick={() => handleSizeChange(size.id)}
+                onClick={() => handleSizeChange(size.id as SizeId)}
                 className={`rounded-xl border p-3 text-center transition ${
                   sizeId === size.id
                     ? "border-acai-600 bg-acai-600 text-white shadow-md"
@@ -138,54 +187,55 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
         {menu.toppingCategories
           .filter((category) => !isCategoryDisabledForSize(sizeId, category.id))
           .map((category) => {
-          const fruitCount = category.id === "frutas" ? countToppingsInCategory(toppingIds, "frutas") : 0
-          const maxSelect = getCategoryMaxSelect(sizeId, category.id)
+            const categoryCount = countToppingsInCategory(toppingIds, category.id)
+            const maxSelect = getCategoryMaxSelect(sizeId, category.id)
+            const categoryIncluded = isCategoryIncludedInSize(sizeId, category.id)
 
-          return (
-            <div key={category.id}>
-              <p className="label">
-                {category.name}
-                {maxSelect != null && (
-                  <span className="ml-1 font-normal text-zinc-400">
-                    ({fruitCount}/{maxSelect})
-                  </span>
-                )}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                {category.toppings.map((topping) => {
-                  const selected = toppingIds.includes(topping.id)
-                  const atMax =
-                    category.id === "frutas" &&
-                    maxSelect != null &&
-                    !selected &&
-                    fruitCount >= maxSelect
-                  const label =
-                    "price" in topping && topping.price != null
-                      ? `${topping.name} +${brl.format(topping.price)}`
+            return (
+              <div key={category.id}>
+                <p className="label">
+                  {category.name}
+                  {maxSelect != null && (
+                    <span className="ml-1 font-normal text-zinc-400">
+                      ({categoryCount}/{maxSelect})
+                    </span>
+                  )}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {category.toppings.map((topping) => {
+                    const selected = toppingIds.includes(topping.id)
+                    const atMax =
+                      maxSelect != null && !selected && categoryCount >= maxSelect
+                    const showPrice =
+                      "price" in topping &&
+                      topping.price != null &&
+                      !categoryIncluded
+                    const label = showPrice
+                      ? `${topping.name} +${brl.format(topping.price!)}`
                       : topping.name
 
-                  return (
-                    <button
-                      key={topping.id}
-                      type="button"
-                      disabled={atMax}
-                      onClick={() => toggleTopping(topping.id)}
-                      className={`chip ${
-                        selected
-                          ? "chip-selected"
-                          : atMax
-                            ? "cursor-not-allowed opacity-40"
-                            : "hover:border-acai-400"
-                      }`}
-                    >
-                      {label}
-                    </button>
-                  )
-                })}
+                    return (
+                      <button
+                        key={topping.id}
+                        type="button"
+                        disabled={atMax}
+                        onClick={() => toggleTopping(topping.id)}
+                        className={`chip ${
+                          selected
+                            ? "chip-selected"
+                            : atMax
+                              ? "cursor-not-allowed opacity-40"
+                              : "hover:border-acai-400"
+                        }`}
+                      >
+                        {label}
+                      </button>
+                    )
+                  })}
+                </div>
               </div>
-            </div>
-          )
-        })}
+            )
+          })}
 
         {extraFruitsPrice > 0 && (
           <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
@@ -196,6 +246,12 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
         {accompanimentsPrice > 0 && (
           <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
             Complementos: +{brl.format(accompanimentsPrice)}
+          </p>
+        )}
+
+        {extraAccompanimentsPrice > 0 && (
+          <p className="rounded-xl bg-amber-50 px-3 py-2 text-sm text-amber-800">
+            Acompanhamentos extras: +{brl.format(extraAccompanimentsPrice)}
           </p>
         )}
 
@@ -222,7 +278,7 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
 
         <div>
           <label className="label" htmlFor="bowl-notes">
-            Observações deste copo
+            Observações deste item
           </label>
           <textarea
             id="bowl-notes"

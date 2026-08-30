@@ -1,13 +1,49 @@
 {
   "sizes": [
-    { "id": "200", "name": "200ml", "price": 9, "categoryMaxSelect": { "frutas": 1 } },
-    { "id": "300", "name": "300ml", "price": 11 },
-    { "id": "500", "name": "500ml", "price": 16 },
+    {
+      "id": "200",
+      "name": "200ml",
+      "price": 9,
+      "kind": "copo",
+      "categoryMaxSelect": { "frutas": 1 },
+      "disabledCategories": ["acompanhamentos-extras"]
+    },
+    {
+      "id": "300",
+      "name": "300ml",
+      "price": 11,
+      "kind": "copo",
+      "disabledCategories": ["acompanhamentos-extras"]
+    },
+    {
+      "id": "500",
+      "name": "500ml",
+      "price": 16,
+      "kind": "copo",
+      "disabledCategories": ["acompanhamentos-extras"]
+    },
     {
       "id": "casquinha",
       "name": "Na casquinha",
       "price": 8,
-      "disabledCategories": ["frutas", "frutas-extras"]
+      "kind": "copo",
+      "disabledCategories": ["frutas", "frutas-extras", "acompanhamentos-extras"]
+    },
+    {
+      "id": "marmita-400",
+      "name": "Marmita Média 400ml",
+      "price": 20,
+      "kind": "marmita",
+      "categoryMaxSelect": { "frutas": 2, "acompanhamentos": 2 },
+      "includedCategories": ["acompanhamentos"]
+    },
+    {
+      "id": "marmita-600",
+      "name": "Marmita Grande 600ml",
+      "price": 30,
+      "kind": "marmita",
+      "categoryMaxSelect": { "frutas": 2, "acompanhamentos": 2 },
+      "includedCategories": ["acompanhamentos"]
     }
   ],
   "toppingCategories": [
@@ -46,6 +82,22 @@
         { "id": "creme-de-ninho", "name": "Creme de Ninho", "price": 4 },
         { "id": "tortuguita", "name": "Tortuguita", "price": 3 },
         { "id": "nutella", "name": "Nutella", "price": 6 }
+      ]
+    },
+    {
+      "id": "acompanhamentos-extras",
+      "name": "Acompanhamentos Extras",
+      "toppings": [
+        { "id": "extra-sucrilhos", "name": "Sucrilhos", "price": 2 },
+        { "id": "extra-canudo-de-chocolate", "name": "Canudo de Chocolate", "price": 2 },
+        { "id": "extra-pacoca", "name": "Paçoca", "price": 2 },
+        { "id": "extra-confete", "name": "Confete", "price": 2 },
+        { "id": "extra-bis", "name": "Bis", "price": 3 },
+        { "id": "extra-kitkat", "name": "KitKat", "price": 4 },
+        { "id": "extra-granola", "name": "Granola", "price": 2 },
+        { "id": "extra-creme-de-ninho", "name": "Creme de Ninho", "price": 4 },
+        { "id": "extra-tortuguita", "name": "Tortuguita", "price": 3 },
+        { "id": "extra-nutella", "name": "Nutella", "price": 6 }
       ]
     }
   ],

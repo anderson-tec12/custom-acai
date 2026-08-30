@@ -37,8 +37,34 @@ export const CUTLERY_PRICE = 0.5
 
 export const CASQUINHA_DEFAULT_TOPPINGS = "Leite em pó e leite condensado"
 
+export type SizeKind = "copo" | "marmita"
+
 export function getSize(id: string) {
   return sizeById.get(id)
+}
+
+export function getSizeKind(sizeId: string): SizeKind {
+  const size = getSize(sizeId)
+  if (size && "kind" in size && size.kind === "marmita") return "marmita"
+  return "copo"
+}
+
+export function getSizesByKind(kind: SizeKind) {
+  return menu.sizes.filter((size) => {
+    const sizeKind = "kind" in size && size.kind === "marmita" ? "marmita" : "copo"
+    return sizeKind === kind
+  })
+}
+
+export function getIncludedCategories(sizeId: string): string[] {
+  const size = getSize(sizeId)
+  if (!size || !("includedCategories" in size)) return []
+  const included = size.includedCategories
+  return Array.isArray(included) ? included : []
+}
+
+export function isCategoryIncludedInSize(sizeId: string, categoryId: string): boolean {
+  return getIncludedCategories(sizeId).includes(categoryId)
 }
 
 export function getDisabledCategories(sizeId: string): string[] {
@@ -119,15 +145,27 @@ export function calcExtraFruitsPrice(toppingIds: string[]): number {
   return getToppingsByCategory(toppingIds, "frutas-extras").reduce((sum, t) => sum + (t.price ?? 0), 0)
 }
 
-export function calcAccompanimentsPrice(toppingIds: string[]): number {
+export function calcExtraAccompanimentsPrice(toppingIds: string[]): number {
+  return getToppingsByCategory(toppingIds, "acompanhamentos-extras").reduce(
+    (sum, t) => sum + (t.price ?? 0),
+    0
+  )
+}
+
+export function calcAccompanimentsPrice(sizeId: string, toppingIds: string[]): number {
+  if (isCategoryIncludedInSize(sizeId, "acompanhamentos")) return 0
   return getToppingsByCategory(toppingIds, "acompanhamentos").reduce(
     (sum, t) => sum + (t.price ?? 0),
     0
   )
 }
 
-export function calcBowlUnitPrice(toppingIds: string[]): number {
-  return calcExtraFruitsPrice(toppingIds) + calcAccompanimentsPrice(toppingIds)
+export function calcBowlUnitPrice(sizeId: string, toppingIds: string[]): number {
+  return (
+    calcExtraFruitsPrice(toppingIds) +
+    calcAccompanimentsPrice(sizeId, toppingIds) +
+    calcExtraAccompanimentsPrice(toppingIds)
+  )
 }
 
 export function calcBowlLineTotal(
@@ -138,7 +176,7 @@ export function calcBowlLineTotal(
 ): number {
   const size = getSize(sizeId)
   if (!size) return 0
-  const unit = size.price + calcBowlUnitPrice(toppingIds)
+  const unit = size.price + calcBowlUnitPrice(sizeId, toppingIds)
   const cutlery = wantsCutlery ? CUTLERY_PRICE * quantity : 0
   return unit * quantity + cutlery
 }
@@ -147,10 +185,12 @@ export function describeBowlToppings(toppingIds: string[]): {
   fruits: ToppingEntry[]
   extraFruits: ToppingEntry[]
   accompaniments: ToppingEntry[]
+  extraAccompaniments: ToppingEntry[]
 } {
   return {
     fruits: getToppingsByCategory(toppingIds, "frutas"),
     extraFruits: getToppingsByCategory(toppingIds, "frutas-extras"),
     accompaniments: getToppingsByCategory(toppingIds, "acompanhamentos"),
+    extraAccompaniments: getToppingsByCategory(toppingIds, "acompanhamentos-extras"),
   }
 }
