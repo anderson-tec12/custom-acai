@@ -171,11 +171,13 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
               </button>
             ))}
           </div>
-          <p className="mt-2 text-sm text-zinc-500">
-            {isCasquinha
-              ? "Acompanha leite em pó e leite condensado."
-              : "Todos os tamanhos acompanham leite em pó e leite condensado."}
-          </p>
+          {sizeKind !== "marmita" && (
+            <p className="mt-2 text-sm text-zinc-500">
+              {isCasquinha
+                ? "Acompanha leite em pó e leite condensado."
+                : "Todos os tamanhos acompanham leite em pó e leite condensado."}
+            </p>
+          )}
         </div>
 
         {isCasquinha && (
