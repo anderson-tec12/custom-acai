@@ -78,12 +78,12 @@
         { "id": "canudo-de-chocolate", "name": "Canudo de Chocolate", "price": 2 },
         { "id": "pacoca", "name": "Paçoca", "price": 2 },
         { "id": "confete", "name": "Confete", "price": 2 },
-        { "id": "bis", "name": "Bis", "price": 3 },
-        { "id": "kitkat", "name": "KitKat", "price": 4 },
+        { "id": "bis", "name": "Bis", "price": 4 },
+        { "id": "kitkat", "name": "KitKat", "price": 6 },
         { "id": "granola", "name": "Granola", "price": 2 },
-        { "id": "creme-de-ninho", "name": "Creme de Ninho", "price": 4 },
+        { "id": "creme-de-ninho", "name": "Creme de Ninho", "price": 6 },
         { "id": "tortuguita", "name": "Tortuguita", "price": 3 },
-        { "id": "nutella", "name": "Nutella", "price": 6 }
+        { "id": "nutella", "name": "Nutella", "price": 8 }
       ]
     },
     {
@@ -94,12 +94,12 @@
         { "id": "extra-canudo-de-chocolate", "name": "Canudo de Chocolate", "price": 2 },
         { "id": "extra-pacoca", "name": "Paçoca", "price": 2 },
         { "id": "extra-confete", "name": "Confete", "price": 2 },
-        { "id": "extra-bis", "name": "Bis", "price": 3 },
-        { "id": "extra-kitkat", "name": "KitKat", "price": 4 },
+        { "id": "extra-bis", "name": "Bis", "price": 4 },
+        { "id": "extra-kitkat", "name": "KitKat", "price": 6 },
         { "id": "extra-granola", "name": "Granola", "price": 2 },
-        { "id": "extra-creme-de-ninho", "name": "Creme de Ninho", "price": 4 },
+        { "id": "extra-creme-de-ninho", "name": "Creme de Ninho", "price": 6 },
         { "id": "extra-tortuguita", "name": "Tortuguita", "price": 3 },
-        { "id": "extra-nutella", "name": "Nutella", "price": 6 }
+        { "id": "extra-nutella", "name": "Nutella", "price": 8 }
       ]
     }
   ],
