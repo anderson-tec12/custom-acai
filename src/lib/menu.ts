@@ -67,6 +67,17 @@ export function isCategoryIncludedInSize(sizeId: string, categoryId: string): bo
   return getIncludedCategories(sizeId).includes(categoryId)
 }
 
+export function getExcludedToppingIds(sizeId: string): string[] {
+  const size = getSize(sizeId)
+  if (!size || !("excludedToppingIds" in size)) return []
+  const excluded = size.excludedToppingIds
+  return Array.isArray(excluded) ? excluded : []
+}
+
+export function isToppingExcludedForSize(sizeId: string, toppingId: string): boolean {
+  return getExcludedToppingIds(sizeId).includes(toppingId)
+}
+
 export function getDisabledCategories(sizeId: string): string[] {
   const size = getSize(sizeId)
   if (!size || !("disabledCategories" in size)) return []
@@ -99,9 +110,10 @@ export function getCategoryMaxSelect(sizeId: string, categoryId: string): number
 
 export function filterAllowedToppings(sizeId: string, toppingIds: string[]): string[] {
   const disabled = new Set(getDisabledCategories(sizeId))
+  const excluded = new Set(getExcludedToppingIds(sizeId))
   const allowed = toppingIds.filter((id) => {
     const topping = getTopping(id)
-    return topping && !disabled.has(topping.categoryId)
+    return topping && !disabled.has(topping.categoryId) && !excluded.has(id)
   })
 
   const counts = new Map<string, number>()
@@ -153,11 +165,20 @@ export function calcExtraAccompanimentsPrice(toppingIds: string[]): number {
 }
 
 export function calcAccompanimentsPrice(sizeId: string, toppingIds: string[]): number {
-  if (isCategoryIncludedInSize(sizeId, "acompanhamentos")) return 0
-  return getToppingsByCategory(toppingIds, "acompanhamentos").reduce(
-    (sum, t) => sum + (t.price ?? 0),
-    0
-  )
+  const accompaniments = getToppingsByCategory(toppingIds, "acompanhamentos")
+  const categoryIncluded = isCategoryIncludedInSize(sizeId, "acompanhamentos")
+
+  return accompaniments.reduce((sum, t) => {
+    if (categoryIncluded && !isToppingExcludedForSize(sizeId, t.id)) return sum
+    return sum + (t.price ?? 0)
+  }, 0)
+}
+
+export function isAccompanimentCharged(sizeId: string, toppingId: string): boolean {
+  const topping = getTopping(toppingId)
+  if (!topping || topping.categoryId !== "acompanhamentos") return false
+  if (isToppingExcludedForSize(sizeId, toppingId)) return true
+  return !isCategoryIncludedInSize(sizeId, "acompanhamentos")
 }
 
 export function calcBowlUnitPrice(sizeId: string, toppingIds: string[]): number {

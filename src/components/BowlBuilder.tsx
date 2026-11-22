@@ -16,6 +16,7 @@ import {
   getTopping,
   isCategoryDisabledForSize,
   isCategoryIncludedInSize,
+  isToppingExcludedForSize,
   type SizeKind,
 } from "../lib/menu"
 import type { SizeId } from "../types"
@@ -33,7 +34,7 @@ type BowlBuilderProps = {
 function getSubtitle(sizeId: SizeId): string | null {
   if (sizeId === "casquinha") return null
   if (getSizeKind(sizeId) === "marmita") {
-    return "Até 2 frutas e 2 acompanhamentos inclusos. Extras a parte."
+    return "Até 2 frutas e 2 acompanhamentos inclusos. KitKat, Nutella e creme de Ninho são cobrados à parte."
   }
   const maxFruits = getCategoryMaxSelect(sizeId, "frutas")
   if (maxFruits === 1) return "Até 1 fruta inclusa no copo"
@@ -95,6 +96,7 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
     if (!topping) return
 
     if (isCategoryDisabledForSize(sizeId, topping.categoryId)) return
+    if (isToppingExcludedForSize(sizeId, id)) return
 
     setToppingIds((prev) => {
       if (prev.includes(id)) {
@@ -204,36 +206,39 @@ export function BowlBuilder({ onAdd }: BowlBuilderProps) {
                   )}
                 </p>
                 <div className="flex flex-wrap gap-2">
-                  {category.toppings.map((topping) => {
-                    const selected = toppingIds.includes(topping.id)
-                    const atMax =
-                      maxSelect != null && !selected && categoryCount >= maxSelect
-                    const showPrice =
-                      "price" in topping &&
-                      topping.price != null &&
-                      !categoryIncluded
-                    const label = showPrice
-                      ? `${topping.name} +${brl.format(topping.price!)}`
-                      : topping.name
+                  {category.toppings
+                    .filter((topping) => !isToppingExcludedForSize(sizeId, topping.id))
+                    .map((topping) => {
+                      const selected = toppingIds.includes(topping.id)
+                      const atMax =
+                        maxSelect != null && !selected && categoryCount >= maxSelect
+                      const price =
+                        "price" in topping && typeof topping.price === "number"
+                          ? topping.price
+                          : undefined
+                      const showPrice = price != null && !categoryIncluded
+                      const label = showPrice
+                        ? `${topping.name} +${brl.format(price)}`
+                        : topping.name
 
-                    return (
-                      <button
-                        key={topping.id}
-                        type="button"
-                        disabled={atMax}
-                        onClick={() => toggleTopping(topping.id)}
-                        className={`chip ${
-                          selected
-                            ? "chip-selected"
-                            : atMax
-                              ? "cursor-not-allowed opacity-40"
-                              : "hover:border-acai-400"
-                        }`}
-                      >
-                        {label}
-                      </button>
-                    )
-                  })}
+                      return (
+                        <button
+                          key={topping.id}
+                          type="button"
+                          disabled={atMax}
+                          onClick={() => toggleTopping(topping.id)}
+                          className={`chip ${
+                            selected
+                              ? "chip-selected"
+                              : atMax
+                                ? "cursor-not-allowed opacity-40"
+                                : "hover:border-acai-400"
+                          }`}
+                        >
+                          {label}
+                        </button>
+                      )
+                    })}
                 </div>
               </div>
             )

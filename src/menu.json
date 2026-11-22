@@ -35,7 +35,8 @@
       "price": 20,
       "kind": "marmita",
       "categoryMaxSelect": { "frutas": 2, "acompanhamentos": 2 },
-      "includedCategories": ["acompanhamentos"]
+      "includedCategories": ["acompanhamentos"],
+      "excludedToppingIds": ["kitkat", "nutella", "creme-de-ninho"]
     },
     {
       "id": "marmita-600",
@@ -43,7 +44,8 @@
       "price": 30,
       "kind": "marmita",
       "categoryMaxSelect": { "frutas": 2, "acompanhamentos": 2 },
-      "includedCategories": ["acompanhamentos"]
+      "includedCategories": ["acompanhamentos"],
+      "excludedToppingIds": ["kitkat", "nutella", "creme-de-ninho"]
     }
   ],
   "toppingCategories": [

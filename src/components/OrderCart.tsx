@@ -1,5 +1,13 @@
 
-import { brl, calcBowlLineTotal, CASQUINHA_DEFAULT_TOPPINGS, CUTLERY_PRICE, describeBowlToppings, getSize, isCategoryIncludedInSize } from "../lib/menu"
+import {
+  brl,
+  calcBowlLineTotal,
+  CASQUINHA_DEFAULT_TOPPINGS,
+  CUTLERY_PRICE,
+  describeBowlToppings,
+  getSize,
+  isAccompanimentCharged,
+} from "../lib/menu"
 import type { BowlLine } from "../types"
 
 type OrderCartProps = {
@@ -10,7 +18,6 @@ type OrderCartProps = {
 function formatToppingsSummary(sizeId: string, toppingIds: string[]): string {
   const { fruits, extraFruits, accompaniments, extraAccompaniments } =
     describeBowlToppings(toppingIds)
-  const accompanimentsIncluded = isCategoryIncludedInSize(sizeId, "acompanhamentos")
   const parts: string[] = []
 
   if (fruits.length > 0) {
@@ -27,7 +34,7 @@ function formatToppingsSummary(sizeId: string, toppingIds: string[]): string {
     parts.push(
       accompaniments
         .map((t) =>
-          !accompanimentsIncluded && t.price != null
+          isAccompanimentCharged(sizeId, t.id) && t.price != null
             ? `${t.name} (+${brl.format(t.price)})`
             : t.name
         )

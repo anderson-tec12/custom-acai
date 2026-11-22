@@ -9,7 +9,7 @@ import {
   describeBowlToppings,
   getPayment,
   getSize,
-  isCategoryIncludedInSize,
+  isAccompanimentCharged,
 } from "./menu"
 import type { OrderState } from "../types"
 
@@ -49,10 +49,9 @@ export function buildWhatsappMessage(order: OrderState, storeName: string): stri
     }
 
     if (accompaniments.length > 0) {
-      const accompanimentsIncluded = isCategoryIncludedInSize(bowl.sizeId, "acompanhamentos")
       for (const topping of accompaniments) {
         const price =
-          !accompanimentsIncluded && topping.price != null
+          isAccompanimentCharged(bowl.sizeId, topping.id) && topping.price != null
             ? ` (+${brl.format(topping.price)})`
             : ""
         lines.push(`   • ${topping.name}${price}`)
